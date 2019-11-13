@@ -1,0 +1,21 @@
+import pandas as pd
+import csv
+
+dataset=list(csv.reader(open('p7.csv','r')))
+attributes=dataset[0]
+print(attributes)
+
+hd=pd.read_csv('p7.csv',names=attributes)
+print(hd.head())
+
+from pgmpy.models import BayesianModel
+model=BayesianModel([('age','trestbps'),('age','fbs'),('sex','trestbps'),('sex','trestbps'),('exang','trestbps'),('trestbps','heartdisease'),('fbs','heartdisease'),('heartdisease','restecg'),('hertdisease','thalach'),('heartdisease','chol')])
+from pgmpy.estimators import MaximumLikelihoodEstimator
+model.fit(hd,estimator=MaximumLikelihoodEstimator)
+
+from pgmpy.inference import VariableElimination
+hd_infer=VariableElimination(model)
+
+print("prob. of heart disease given age=20")
+q=hd_infer.query(variables=['heartdisease'],evidence={'age':20})
+print(q['heartdisease'])
